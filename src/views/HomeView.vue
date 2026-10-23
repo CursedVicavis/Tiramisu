@@ -595,6 +595,7 @@ async function handleLogout() {
 }
 .event-status-dot.status--active   { background: #2FA084; box-shadow: 0 0 0 3px rgba(47,160,132,0.2); }
 .event-status-dot.status--upcoming { background: #b8860b; box-shadow: 0 0 0 3px rgba(184,134,11,0.2); }
+.event-status-dot.status--overdue  { background: #c0392b; box-shadow: 0 0 0 3px rgba(217,79,79,0.2); }
 .event-status-dot.status--finished { background: #b0b8c4; }
 
 .event-name { font-size: 1rem; font-weight: 700; color: var(--color-dark); }
@@ -609,6 +610,7 @@ async function handleLogout() {
 }
 .event-status-chip.status--active   { background: rgba(47,160,132,0.12); color: #1F6F5F; }
 .event-status-chip.status--upcoming { background: rgba(255,193,7,0.12);  color: #b8860b; }
+.event-status-chip.status--overdue  { background: rgba(217,79,79,0.12);  color: #c0392b; }
 .event-status-chip.status--finished { background: rgba(180,180,200,0.15); color: #888; }
 
 .action-btn {
@@ -636,6 +638,7 @@ async function handleLogout() {
   font-size: 0.78rem; font-weight: 500; color: var(--color-dark);
 }
 .date-chip--end { border-color: rgba(31,111,95,0.2); }
+.date-chip--real { background: rgba(47,160,132,0.12); border-color: rgba(47,160,132,0.3); color: var(--color-dark); }
 
 .duracion-badge {
   display: inline-flex; align-items: center; gap: 4px;
@@ -698,6 +701,10 @@ async function handleLogout() {
 .task-content { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0; }
 .task-titulo  { font-size: 0.85rem; font-weight: 600; color: var(--color-dark); }
 .task-detalle { font-size: 0.77rem; color: var(--color-text-muted); line-height: 1.4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.task-reminders-list {
+  display: flex; align-items: center; gap: 6px; flex-wrap: wrap; justify-content: flex-end;
+}
 
 .task-reminder-chip {
   display: inline-flex; align-items: center; gap: 4px;
