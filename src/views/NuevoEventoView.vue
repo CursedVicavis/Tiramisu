@@ -244,7 +244,7 @@
 
         <!-- ── Acciones finales ── -->
         <div class="form-actions">
-          <button type="button" class="btn-cancel" @click="$router.push('/home')">
+          <button type="button" class="btn-cancel" @click="$router.push('/eventos')">
             Cancelar
           </button>
           <button id="btn-save-event" type="button" class="btn-save" :class="{ 'btn-save--loading': saving }" :disabled="saving" @click="handleSave">
@@ -398,7 +398,7 @@ async function handleSave() {
   showToast.value = true
   setTimeout(() => {
     showToast.value = false
-    router.push({ name: 'home' })
+    router.push({ name: 'eventos' })
   }, 1500)
 }
 </script>

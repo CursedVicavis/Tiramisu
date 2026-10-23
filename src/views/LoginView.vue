@@ -17,8 +17,12 @@
       <!-- Card -->
       <div class="card">
         <div class="card-header">
-          <h2 class="card-title">{{ isSignUp ? 'Crea tu cuenta' : 'Bienvenido de nuevo' }}</h2>
-          <p class="card-subtitle">{{ isSignUp ? 'Ingresa tus datos para registrarte' : 'Ingresa tus credenciales para continuar' }}</p>
+          <h2 class="card-title">
+            {{ isResetPassword ? 'Recuperar contraseña' : (isSignUp ? 'Crea tu cuenta' : 'Bienvenido de nuevo') }}
+          </h2>
+          <p class="card-subtitle">
+            {{ isResetPassword ? 'Te enviaremos un enlace a tu correo para restablecerla' : (isSignUp ? 'Ingresa tus datos para registrarte' : 'Ingresa tus credenciales para continuar') }}
+          </p>
         </div>
 
         <form class="form" @submit.prevent="handleLogin">
@@ -46,9 +50,19 @@
             <span v-if="errors.email" class="field-error">{{ errors.email }}</span>
           </div>
 
-          <!-- Password -->
-          <div class="field" :class="{ 'field--error': errors.password, 'field--focused': focused === 'password' }">
-            <label class="field-label" for="password">Contraseña</label>
+          <!-- Password (oculta en modo recuperación) -->
+          <div v-if="!isResetPassword" class="field" :class="{ 'field--error': errors.password, 'field--focused': focused === 'password' }">
+            <div class="field-label-row">
+              <label class="field-label" for="password">Contraseña</label>
+              <button
+                v-if="!isSignUp"
+                type="button"
+                class="btn-forgot"
+                @click="activarRecuperacion"
+              >
+                ¿Olvidaste tu contraseña?
+              </button>
+            </div>
             <div class="field-wrapper">
               <span class="field-icon">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -94,6 +108,17 @@
             </div>
           </Transition>
 
+          <!-- Mensaje de éxito recuperación -->
+          <Transition name="fade">
+            <div v-if="resetSuccess" class="alert-success">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                <path d="m9 11 3 3L22 4"/>
+              </svg>
+              {{ resetSuccess }}
+            </div>
+          </Transition>
+
           <!-- Submit -->
           <button
             id="btn-login"
@@ -102,18 +127,27 @@
             :class="{ 'btn-submit--loading': loading }"
             :disabled="loading"
           >
-            <span v-if="!loading">{{ isSignUp ? 'Registrarse' : 'Iniciar sesión' }}</span>
+            <span v-if="!loading">
+              {{ isResetPassword ? 'Enviar enlace de recuperación' : (isSignUp ? 'Registrarse' : 'Iniciar sesión') }}
+            </span>
             <span v-else class="spinner"></span>
           </button>
         </form>
 
         <div class="auth-toggle">
-          <span class="toggle-text">
-            {{ isSignUp ? '¿Ya tienes cuenta?' : '¿No tienes cuenta?' }}
-          </span>
-          <button type="button" class="btn-toggle" @click="isSignUp = !isSignUp; loginError = ''">
-            {{ isSignUp ? 'Inicia sesión' : 'Regístrate' }}
-          </button>
+          <template v-if="isResetPassword">
+            <button type="button" class="btn-toggle" @click="volverALogin">
+              ← Volver a iniciar sesión
+            </button>
+          </template>
+          <template v-else>
+            <span class="toggle-text">
+              {{ isSignUp ? '¿Ya tienes cuenta?' : '¿No tienes cuenta?' }}
+            </span>
+            <button type="button" class="btn-toggle" @click="isSignUp = !isSignUp; loginError = ''; resetSuccess = ''">
+              {{ isSignUp ? 'Inicia sesión' : 'Regístrate' }}
+            </button>
+          </template>
         </div>
       </div>
 
@@ -128,16 +162,36 @@ import { useRouter } from 'vue-router'
 import AppLogo from '../components/AppLogo.vue'
 import { supabase } from '../utils/supabase'
 import { initEventos } from '../store/eventos'
+import { initProyectos } from '../store/proyectos'
 
 const router = useRouter()
 
 const isSignUp = ref(false)
+const isResetPassword = ref(false)
 const form = reactive({ email: '', password: '' })
 const errors = reactive({ email: '', password: '' })
 const focused = ref<string | null>(null)
 const showPassword = ref(false)
 const loading = ref(false)
 const loginError = ref('')
+const resetSuccess = ref('')
+
+function activarRecuperacion() {
+  isResetPassword.value = true
+  isSignUp.value = false
+  loginError.value = ''
+  resetSuccess.value = ''
+  errors.email = ''
+  errors.password = ''
+}
+
+function volverALogin() {
+  isResetPassword.value = false
+  loginError.value = ''
+  resetSuccess.value = ''
+  errors.email = ''
+  errors.password = ''
+}
 
 function validate(): boolean {
   errors.email = ''
@@ -152,12 +206,14 @@ function validate(): boolean {
     valid = false
   }
 
-  if (!form.password) {
-    errors.password = 'La contraseña es requerida'
-    valid = false
-  } else if (form.password.length < 6) {
-    errors.password = 'Mínimo 6 caracteres'
-    valid = false
+  if (!isResetPassword.value) {
+    if (!form.password) {
+      errors.password = 'La contraseña es requerida'
+      valid = false
+    } else if (form.password.length < 6) {
+      errors.password = 'Mínimo 6 caracteres'
+      valid = false
+    }
   }
 
   return valid
@@ -165,9 +221,23 @@ function validate(): boolean {
 
 async function handleLogin() {
   loginError.value = ''
+  resetSuccess.value = ''
   if (!validate()) return
 
   loading.value = true
+
+  if (isResetPassword.value) {
+    const { error } = await supabase.auth.resetPasswordForEmail(form.email.trim(), {
+      redirectTo: `${window.location.origin}/reset-password`,
+    })
+    loading.value = false
+    if (error) {
+      loginError.value = 'No se pudo enviar el correo de recuperación. Verifica tu dirección.'
+    } else {
+      resetSuccess.value = 'Te enviamos un enlace a tu correo para restablecer tu contraseña.'
+    }
+    return
+  }
 
   if (isSignUp.value) {
     // El registro no está conectado a Supabase aún por decisión del usuario
@@ -185,7 +255,7 @@ async function handleLogin() {
     loginError.value = 'Credenciales incorrectas o error en inicio de sesión.'
     loading.value = false
   } else {
-    await initEventos(true)
+    await Promise.all([initProyectos(true), initEventos(true)])
     router.push({ name: 'home' })
   }
 }
@@ -326,6 +396,26 @@ async function handleLogin() {
   letter-spacing: 0.02em;
 }
 
+.field-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.btn-forgot {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--color-mid);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.btn-forgot:hover {
+  text-decoration: underline;
+  color: var(--color-dark);
+}
+
 .field-wrapper {
   position: relative;
   display: flex;
@@ -405,6 +495,19 @@ async function handleLogin() {
   border-radius: var(--radius-sm);
   color: #c0392b;
   font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.alert-success {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: rgba(47, 160, 132, 0.1);
+  border: 1px solid rgba(47, 160, 132, 0.3);
+  border-radius: var(--radius-sm);
+  color: var(--color-dark);
+  font-size: 0.85rem;
   font-weight: 500;
 }
 

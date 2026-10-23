@@ -7,8 +7,8 @@
       <!-- Topbar -->
       <header class="topbar">
         <div class="topbar-left">
-          <h2 class="page-title">Inicio</h2>
-          <span class="page-breadcrumb">Panel principal</span>
+          <h2 class="page-title">Eventos</h2>
+          <span class="page-breadcrumb">Calendario y gestión de eventos</span>
         </div>
         <div class="topbar-right">
           <span class="topbar-date">{{ currentDate }}</span>

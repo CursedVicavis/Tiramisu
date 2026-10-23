@@ -10,7 +10,7 @@
           <span class="page-breadcrumb">Eventos › Editar</span>
         </div>
         <div class="topbar-right">
-          <button class="btn-back" @click="$router.push('/home')">
+          <button class="btn-back" @click="$router.push('/eventos')">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
               <polyline points="15 18 9 12 15 6"/>
             </svg>
@@ -27,7 +27,7 @@
         </svg>
         <h3>Evento no encontrado</h3>
         <p>El evento que intentas editar no existe o fue eliminado.</p>
-        <RouterLink to="/home" class="btn-ir-inicio">Ir al inicio</RouterLink>
+        <RouterLink to="/eventos" class="btn-ir-inicio">Ir a eventos</RouterLink>
       </div>
 
       <div v-else class="content-area">
@@ -232,7 +232,7 @@
 
         <!-- Acciones -->
         <div class="form-actions">
-          <button type="button" class="btn-cancel" @click="$router.push('/home')">Cancelar</button>
+          <button type="button" class="btn-cancel" @click="$router.push('/eventos')">Cancelar</button>
           <button id="btn-update-event" type="button" class="btn-save"
             :disabled="saving" @click="handleUpdate">
             <span v-if="!saving">
@@ -374,7 +374,7 @@ async function handleUpdate() {
   showToast.value = true
   setTimeout(() => {
     showToast.value = false
-    router.push({ name: 'home' })
+    router.push({ name: 'eventos' })
   }, 1500)
 }
 </script>
