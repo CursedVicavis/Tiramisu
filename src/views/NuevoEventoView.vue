@@ -322,7 +322,7 @@
 <script setup lang="ts">
 import { ref, reactive, computed } from 'vue'
 import { useRouter, RouterLink } from 'vue-router'
-import { addEvento, type Tarea, type Recordatorio } from '../store/eventos'
+import { addEvento, type Tarea } from '../store/eventos'
 import AppLogo from '../components/AppLogo.vue'
 import { supabase } from '../utils/supabase'
 

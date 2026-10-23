@@ -304,7 +304,7 @@
 import { ref, reactive, computed, onMounted } from 'vue'
 import { useRouter, useRoute, RouterLink } from 'vue-router'
 import { getEvento, updateEvento } from '../store/eventos'
-import type { Tarea, Recordatorio } from '../store/eventos'
+import type { Tarea } from '../store/eventos'
 import AppLogo from '../components/AppLogo.vue'
 import { supabase } from '../utils/supabase'
 
