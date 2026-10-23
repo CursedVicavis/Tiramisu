@@ -36,6 +36,10 @@ const router = createRouter({
       component: EditarEventoView,
       meta: { requiresAuth: true },
     },
+    {
+      path: '/:pathMatch(.*)*',
+      redirect: '/home',
+    },
   ],
 })
 
