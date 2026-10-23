@@ -383,7 +383,7 @@ async function handleUpdate() {
 .page-layout { display: flex; min-height: 100vh; background: var(--color-bg); }
 
 /* Main */
-.main { flex: 1; margin-left: 240px; display: flex; flex-direction: column; min-height: 100vh; }
+.main { flex: 1; margin-left: 220px; display: flex; flex-direction: column; min-height: 100vh; }
 
 /* Topbar */
 .topbar { display: flex; align-items: center; justify-content: space-between; padding: 20px 32px; background: white; border-bottom: 1px solid rgba(47,160,132,0.1); box-shadow: var(--shadow-sm); position: sticky; top: 0; z-index: 50; }

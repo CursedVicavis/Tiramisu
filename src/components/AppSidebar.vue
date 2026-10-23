@@ -1,51 +1,88 @@
 <template>
   <aside class="sidebar">
+    <!-- Brand -->
     <div class="sidebar-brand">
       <div class="sidebar-icon">
-        <AppLogo :size="28" />
+        <AppLogo :size="24" />
       </div>
-      <span class="sidebar-name">Tiramisu</span>
+      <span class="sidebar-name">tiramisu</span>
     </div>
 
+    <!-- Perfil estilo LinkedIn / Facebook -->
+    <div class="profile-mini-card">
+      <div class="user-avatar">{{ userInitial }}</div>
+      <div class="user-info">
+        <span class="user-name">{{ userName }}</span>
+        <span class="user-email">{{ userEmail }}</span>
+      </div>
+    </div>
+
+    <!-- Navegación social compacta -->
     <nav class="sidebar-nav">
       <RouterLink to="/home" class="nav-item" active-class="nav-item--active">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
-          <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
-        </svg>
-        Proyectos e Ideas
+        <span class="nav-icon-wrap">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/>
+            <rect x="14" y="14" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/>
+          </svg>
+        </span>
+        <span>Mis Proyectos</span>
       </RouterLink>
+
+      <RouterLink to="/proyectos" class="nav-item" active-class="nav-item--active">
+        <span class="nav-icon-wrap">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+          </svg>
+        </span>
+        <span>Todos los Proyectos</span>
+      </RouterLink>
+
+      <RouterLink to="/comunidad" class="nav-item" active-class="nav-item--active">
+        <span class="nav-icon-wrap">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
+        </span>
+        <span>Comunidad</span>
+      </RouterLink>
+
+      <div class="nav-divider"></div>
+      <span class="nav-section-label">Agenda</span>
+
       <RouterLink to="/eventos" class="nav-item" exact-active-class="nav-item--active">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
-          <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
-        </svg>
-        Eventos
+        <span class="nav-icon-wrap">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="4" width="18" height="18" rx="2"/>
+            <line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/>
+            <line x1="3" x2="21" y1="10" y2="10"/>
+          </svg>
+        </span>
+        <span>Eventos</span>
       </RouterLink>
+
       <RouterLink to="/eventos/nuevo" class="nav-item" active-class="nav-item--active">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="3" y="4" width="18" height="18" rx="2"/>
-          <line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/>
-          <line x1="3" x2="21" y1="10" y2="10"/>
-          <line x1="12" x2="12" y1="14" y2="18"/><line x1="10" x2="14" y1="16" y2="16"/>
-        </svg>
-        Nuevo Evento
+        <span class="nav-icon-wrap">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" x2="12" y1="5" y2="19"/><line x1="5" x2="19" y1="12" y2="12"/>
+          </svg>
+        </span>
+        <span>Nuevo Evento</span>
       </RouterLink>
     </nav>
 
+    <!-- Footer Logout -->
     <div class="sidebar-footer">
-      <div class="user-badge">
-        <div class="user-avatar">{{ userInitial }}</div>
-        <div class="user-info">
-          <span class="user-name">{{ userName }}</span>
-          <span class="user-email">{{ userEmail }}</span>
-        </div>
-      </div>
       <button id="btn-logout" class="btn-logout" @click="handleLogout" title="Cerrar sesión">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
           <polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/>
         </svg>
+        <span>Cerrar sesión</span>
       </button>
     </div>
   </aside>
@@ -84,128 +121,173 @@ async function handleLogout() {
 
 <style scoped>
 .sidebar {
-  width: 240px;
+  width: 220px;
   min-height: 100vh;
-  background: linear-gradient(180deg, #1F6F5F 0%, #154d43 100%);
+  background: #ffffff;
+  border-right: 1px solid rgba(0, 0, 0, 0.08);
   display: flex;
   flex-direction: column;
-  padding: 24px 16px;
+  padding: 14px 10px;
   gap: 8px;
   position: fixed;
   top: 0; left: 0; bottom: 0;
   z-index: 100;
-  box-shadow: 4px 0 24px rgba(31, 111, 95, 0.2);
 }
+
 .sidebar-brand {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 4px 8px 20px;
-  border-bottom: 1px solid rgba(111, 207, 151, 0.2);
-  margin-bottom: 8px;
-}
-.sidebar-name {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: white;
-  letter-spacing: -0.3px;
-}
-.sidebar-nav {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  flex: 1;
-}
-.nav-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 12px;
-  border-radius: var(--radius-sm);
-  color: rgba(255, 255, 255, 0.65);
-  font-size: 0.9rem;
-  font-weight: 500;
-  transition: background var(--transition), color var(--transition);
-  text-decoration: none;
-}
-.nav-item:hover {
-  background: rgba(111, 207, 151, 0.15);
-  color: white;
-}
-.nav-item--active {
-  background: rgba(111, 207, 151, 0.2);
-  color: #6FCF97;
-}
-.nav-item--active svg {
-  stroke: #6FCF97;
-}
-.sidebar-footer {
-  display: flex;
-  align-items: center;
   gap: 8px;
-  padding: 16px 8px 8px;
-  border-top: 1px solid rgba(111, 207, 151, 0.2);
+  padding: 4px 10px 10px;
 }
-.user-badge {
+
+.sidebar-name {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--color-dark);
+  letter-spacing: -0.4px;
+}
+
+.profile-mini-card {
   display: flex;
   align-items: center;
-  gap: 10px;
-  flex: 1;
-  min-width: 0;
+  gap: 9px;
+  padding: 8px 10px;
+  background: #f7f9fa;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: var(--radius-md);
+  margin-bottom: 4px;
 }
+
 .user-avatar {
-  width: 36px;
-  height: 36px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #6FCF97, #2FA084);
+  background: linear-gradient(135deg, #2FA084, #1F6F5F);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.9rem;
+  font-size: 0.78rem;
   font-weight: 700;
   color: white;
   flex-shrink: 0;
 }
+
 .user-info {
   display: flex;
   flex-direction: column;
   min-width: 0;
 }
+
 .user-name {
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   font-weight: 600;
-  color: white;
+  color: var(--color-text);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
 .user-email {
-  font-size: 0.7rem;
-  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.68rem;
+  color: var(--color-text-muted);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.btn-logout {
-  background: none;
-  border: none;
-  color: rgba(255, 255, 255, 0.4);
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+
+.nav-section-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-text-muted);
+  padding: 6px 10px 2px;
+}
+
+.nav-divider {
+  height: 1px;
+  background: rgba(0, 0, 0, 0.06);
+  margin: 6px 8px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 10px;
+  border-radius: var(--radius-md);
+  color: #4b4f56;
+  font-size: 0.82rem;
+  font-weight: 500;
+  transition: background var(--transition), color var(--transition);
+  text-decoration: none;
+}
+
+.nav-icon-wrap {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: #f0f2f5;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 6px;
-  border-radius: var(--radius-sm);
-  transition: background var(--transition), color var(--transition);
+  color: #4b4f56;
+  transition: all var(--transition);
   flex-shrink: 0;
 }
+
+.nav-item:hover {
+  background: #f0f2f5;
+  color: var(--color-text);
+}
+
+.nav-item--active {
+  background: rgba(47, 160, 132, 0.1);
+  color: var(--color-dark);
+  font-weight: 600;
+}
+
+.nav-item--active .nav-icon-wrap {
+  background: var(--color-mid);
+  color: white;
+}
+
+.sidebar-footer {
+  padding-top: 8px;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.btn-logout {
+  width: 100%;
+  background: none;
+  border: none;
+  color: var(--color-text-muted);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  border-radius: var(--radius-md);
+  font-size: 0.78rem;
+  font-weight: 500;
+  transition: background var(--transition), color var(--transition);
+}
+
 .btn-logout:hover {
-  background: rgba(217, 79, 79, 0.15);
-  color: #f08080;
+  background: rgba(217, 79, 79, 0.08);
+  color: #c0392b;
 }
 
 @media (max-width: 768px) {
   .sidebar {
-    width: 200px;
+    width: 190px;
   }
 }
 </style>

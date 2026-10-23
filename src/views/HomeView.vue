@@ -12,6 +12,7 @@
         </div>
         <div class="topbar-right">
           <span class="topbar-date">{{ currentDate }}</span>
+          <NotificationCenter />
           <RouterLink to="/eventos/nuevo" class="btn-new-event" id="btn-ir-nuevo-evento">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
               <line x1="12" x2="12" y1="5" y2="19"/><line x1="5" x2="19" y1="12" y2="12"/>
@@ -280,6 +281,7 @@ import { ref, computed, reactive } from 'vue'
 import { RouterLink } from 'vue-router'
 import { eventosStore, deleteEvento, type Evento, type Recordatorio } from '../store/eventos'
 import AppSidebar from '../components/AppSidebar.vue'
+import NotificationCenter from '../components/NotificationCenter.vue'
 
 const currentDate = ref(
   new Date().toLocaleDateString('es-HN', {
@@ -419,7 +421,7 @@ async function ejecutarEliminar() {
 @keyframes spin { to { transform: rotate(360deg); } }
 
 /* ── Main ── */
-.main { flex: 1; margin-left: 240px; display: flex; flex-direction: column; min-height: 100vh; }
+.main { flex: 1; margin-left: 220px; display: flex; flex-direction: column; min-height: 100vh; }
 
 /* ── Topbar ── */
 .topbar {

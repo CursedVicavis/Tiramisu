@@ -3,19 +3,24 @@
     <AppSidebar />
 
     <main class="main">
-      <!-- Topbar -->
+      <!-- Topbar compacta estilo red social -->
       <header class="topbar">
-        <div class="topbar-left">
-          <h2 class="page-title">Proyectos y Seguimiento</h2>
-          <span class="page-breadcrumb">Panel principal › Proyectos, ideas y temas por ver</span>
+        <div class="search-box">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
+          </svg>
+          <input
+            v-model="busqueda"
+            type="text"
+            class="search-input"
+            placeholder="Buscar proyectos, marcas, notas o links..."
+          />
         </div>
+
         <div class="topbar-right">
-          <span class="topbar-date">{{ currentDate }}</span>
+          <NotificationCenter />
           <button id="btn-nuevo-proyecto" class="btn-primary" @click="abrirModalNuevo">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <line x1="12" x2="12" y1="5" y2="19"/><line x1="5" x2="19" y1="12" y2="12"/>
-            </svg>
-            Nuevo proyecto / idea
+            + Nuevo proyecto
           </button>
         </div>
       </header>
@@ -24,64 +29,35 @@
         <!-- Loading -->
         <div v-if="proyectosStore.loading" class="loading-state">
           <div class="loading-spinner"></div>
-          <p>Cargando tus proyectos e ideas...</p>
+          <p>Cargando proyectos...</p>
         </div>
 
         <template v-else>
-          <!-- Stats Row -->
-          <div class="stats-row">
-            <div class="stat-card">
-              <div class="stat-icon stat-icon--total">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
-                  <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
-                </svg>
-              </div>
-              <div>
-                <div class="stat-value">{{ proyectosStore.proyectos.length }}</div>
-                <div class="stat-label">Total proyectos</div>
-              </div>
+          <!-- Caja estilo Facebook / LinkedIn para crear proyecto/idea + resumen compacto -->
+          <div class="social-composer-card">
+            <div class="composer-top">
+              <div class="composer-avatar">T</div>
+              <button type="button" class="composer-trigger" @click="abrirModalNuevo">
+                ¿Qué proyecto, página web o idea quieres empezar a seguir hoy?
+              </button>
             </div>
-
-            <div class="stat-card">
-              <div class="stat-icon stat-icon--unseen">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
-                  <circle cx="12" cy="12" r="3"/>
-                </svg>
+            <div class="composer-bottom">
+              <div class="composer-shortcuts">
+                <button type="button" class="shortcut-btn" @click="abrirModalNuevo">🖼️ Imagen</button>
+                <button type="button" class="shortcut-btn" @click="abrirModalNuevo">🔗 URL / Link</button>
+                <button type="button" class="shortcut-btn" @click="abrirModalNuevo">🔔 Recordatorio</button>
               </div>
-              <div>
-                <div class="stat-value">{{ countPorVer }}</div>
-                <div class="stat-label">Faltan por ver / Ideas</div>
-              </div>
-            </div>
-
-            <div class="stat-card">
-              <div class="stat-icon stat-icon--active">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
-                </svg>
-              </div>
-              <div>
-                <div class="stat-value">{{ countEnProgreso }}</div>
-                <div class="stat-label">En seguimiento activo</div>
-              </div>
-            </div>
-
-            <div class="stat-card">
-              <div class="stat-icon stat-icon--done">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/>
-                </svg>
-              </div>
-              <div>
-                <div class="stat-value">{{ countTerminados }}</div>
-                <div class="stat-label">Terminados</div>
+              <div class="mini-counters">
+                <span><strong>{{ countPorVer }}</strong> por ver</span>
+                <span>·</span>
+                <span><strong>{{ countEnProgreso }}</strong> en curso</span>
+                <span>·</span>
+                <span><strong>{{ countTerminados }}</strong> listos</span>
               </div>
             </div>
           </div>
 
-          <!-- Filtros y búsqueda -->
+          <!-- Filtros compactos -->
           <div class="filters-bar">
             <div class="filter-tabs">
               <button
@@ -95,18 +71,6 @@
                 {{ tab.label }}
                 <span class="tab-count">{{ getCountByTab(tab.value) }}</span>
               </button>
-            </div>
-
-            <div class="search-box">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
-              </svg>
-              <input
-                v-model="busqueda"
-                type="text"
-                class="search-input"
-                placeholder="Buscar por proyecto, marca, nota o URL..."
-              />
             </div>
           </div>
 
@@ -280,14 +244,23 @@
               <!-- Footer de tarjeta -->
               <div class="project-footer">
                 <span class="updated-label">Actualizado: {{ formatShortDate(proy.updatedAt) }}</span>
-                <button
-                  type="button"
-                  class="btn-toggle-public"
-                  :class="{ 'btn-toggle-public--active': proy.esPublico }"
-                  @click="togglePublicar(proy)"
-                >
-                  {{ proy.esPublico ? 'Publicado en Comunidad' : 'Compartir en Comunidad' }}
-                </button>
+                <div class="footer-btns">
+                  <button
+                    type="button"
+                    class="btn-blog"
+                    @click="abrirBlog(proy)"
+                  >
+                    📖 Blog de avances ({{ (proy.blog || []).length }})
+                  </button>
+                  <button
+                    type="button"
+                    class="btn-toggle-public"
+                    :class="{ 'btn-toggle-public--active': proy.esPublico }"
+                    @click="togglePublicar(proy)"
+                  >
+                    {{ proy.esPublico ? 'Publicado en Comunidad' : 'Compartir en Comunidad' }}
+                  </button>
+                </div>
               </div>
             </article>
           </TransitionGroup>
@@ -452,7 +425,15 @@
                 <div class="inline-row">
                   <input v-model="rec.fecha" type="date" class="field-input" />
                   <input v-model="rec.hora" type="time" class="field-input" />
-                  <input v-model="rec.telefonoWhatsapp" type="tel" class="field-input" placeholder="WhatsApp opcional (ej. 50499999999)" />
+                  <input
+                    :value="rec.telefonoWhatsapp"
+                    type="tel"
+                    class="field-input"
+                    placeholder="+504 9999-9999"
+                    maxlength="14"
+                    @focus="!rec.telefonoWhatsapp && (rec.telefonoWhatsapp = '+504 ')"
+                    @input="rec.telefonoWhatsapp = formatPhoneHN(($event.target as HTMLInputElement).value)"
+                  />
                 </div>
               </div>
               <p v-if="form.recordatorios.length === 0" class="sub-empty">Sin recordatorios configurados.</p>
@@ -478,6 +459,89 @@
       </div>
     </Transition>
 
+    <!-- Modal Blog de Avances del Proyecto -->
+    <Transition name="modal">
+      <div v-if="proyectoBlogActivo" class="modal-overlay" @click.self="proyectoBlogActivo = null">
+        <div class="modal-dialog">
+          <div class="modal-header">
+            <div>
+              <h3 class="modal-title">📖 Blog de avances · {{ proyectoBlogActivo.titulo }}</h3>
+              <p class="modal-subtitle">Documenta paso a paso tus avances, decisiones y bitácora del proyecto</p>
+            </div>
+            <button type="button" class="btn-close" @click="proyectoBlogActivo = null">✕</button>
+          </div>
+
+          <!-- Formulario nueva entrada del blog -->
+          <form class="sub-block" @submit.prevent="publicarEntradaBlog">
+            <span class="sub-block-title">✍️ Nueva entrada de avance</span>
+            <input
+              v-model="nuevaEntrada.titulo"
+              type="text"
+              class="field-input"
+              placeholder="Título del avance (ej. Día 1: Estructura y diseño inicial)"
+              required
+            />
+            <textarea
+              v-model="nuevaEntrada.contenido"
+              rows="3"
+              class="field-input field-textarea"
+              placeholder="Escribe qué avanzaste hoy, cambios realizados, ideas o siguientes pasos..."
+              required
+            ></textarea>
+            <div class="inline-row">
+              <input
+                v-model="nuevaEntrada.imagenUrl"
+                type="text"
+                class="field-input"
+                placeholder="URL de imagen opcional o sube desde tu PC 👉"
+              />
+              <label class="btn-upload">
+                📷 Subir foto
+                <input type="file" accept="image/*" hidden @change="onSubirImagenBlog" />
+              </label>
+              <button type="submit" class="btn-primary">Publicar avance</button>
+            </div>
+          </form>
+
+          <!-- Línea de tiempo de entradas -->
+          <div class="blog-timeline">
+            <div
+              v-for="post in (proyectoBlogActivo.blog || [])"
+              :key="post.id"
+              class="blog-entry-card"
+            >
+              <div class="blog-entry-header">
+                <div>
+                  <h4 class="blog-entry-title">{{ post.titulo }}</h4>
+                  <span class="blog-entry-date">{{ formatFullDate(post.createdAt) }}</span>
+                </div>
+                <button
+                  type="button"
+                  class="btn-row-del"
+                  @click="eliminarPostBlog(proyectoBlogActivo.id, post.id)"
+                  title="Eliminar entrada"
+                >
+                  ✕
+                </button>
+              </div>
+              <p class="blog-entry-content">{{ post.contenido }}</p>
+              <img
+                v-if="post.imagenUrl"
+                :src="post.imagenUrl"
+                :alt="post.titulo"
+                class="blog-entry-img"
+                @click="imagenLightbox = { id: post.id, url: post.imagenUrl, titulo: post.titulo, origen: 'url' }"
+              />
+            </div>
+
+            <p v-if="!proyectoBlogActivo.blog || proyectoBlogActivo.blog.length === 0" class="sub-empty">
+              Aún no hay entradas en el blog de este proyecto. ¡Escribe tu primer avance arriba!
+            </p>
+          </div>
+        </div>
+      </div>
+    </Transition>
+
     <!-- Lightbox de imagen -->
     <Transition name="modal">
       <div v-if="imagenLightbox" class="modal-overlay" @click="imagenLightbox = null">
@@ -495,7 +559,9 @@
 
 <script setup lang="ts">
 import { ref, reactive, computed, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
 import AppSidebar from '../components/AppSidebar.vue'
+import NotificationCenter from '../components/NotificationCenter.vue'
 import {
   proyectosStore,
   initProyectos,
@@ -503,6 +569,9 @@ import {
   updateProyecto,
   deleteProyecto,
   toggleItemSeguimiento,
+  addEntradaBlog,
+  deleteEntradaBlog,
+  formatPhoneHN,
   buildWhatsAppUrl,
   type Proyecto,
   type EstadoProyecto,
@@ -512,14 +581,17 @@ import {
   type RecordatorioProyecto,
 } from '../store/proyectos'
 
-const currentDate = ref(
-  new Date().toLocaleDateString('es-HN', {
-    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
-  })
-)
+const route = useRoute()
 
-onMounted(() => {
-  initProyectos()
+onMounted(async () => {
+  await initProyectos()
+  const qId = Number(route.query.id)
+  if (qId) {
+    const target = proyectosStore.proyectos.find(p => p.id === qId)
+    if (target) {
+      busqueda.value = target.titulo
+    }
+  }
 })
 
 // ── Estadísticas y filtros ──
@@ -772,11 +844,86 @@ function agregarRecordatorio() {
     mensaje: '',
     fecha: new Date().toISOString().split('T')[0],
     hora: '09:00',
-    telefonoWhatsapp: '',
+    telefonoWhatsapp: '+504 ',
   })
 }
 function quitarRecordatorio(id: string) {
   form.recordatorios = form.recordatorios.filter(r => r.id !== id)
+}
+
+// ── Blog por proyecto ──
+const proyectoBlogId = ref<number | null>(null)
+const proyectoBlogActivo = computed(() =>
+  proyectoBlogId.value !== null
+    ? proyectosStore.proyectos.find(p => p.id === proyectoBlogId.value) ?? null
+    : null
+)
+const nuevaEntrada = reactive({
+  titulo: '',
+  contenido: '',
+  imagenUrl: '',
+})
+
+function abrirBlog(proy: Proyecto) {
+  proyectoBlogId.value = proy.id
+  nuevaEntrada.titulo = ''
+  nuevaEntrada.contenido = ''
+  nuevaEntrada.imagenUrl = ''
+}
+
+function onSubirImagenBlog(event: Event) {
+  const input = event.target as HTMLInputElement
+  const file = input.files?.[0]
+  if (!file) return
+  const reader = new FileReader()
+  reader.onload = () => {
+    const img = new Image()
+    img.onload = () => {
+      const canvas = document.createElement('canvas')
+      const maxDim = 900
+      let w = img.width
+      let h = img.height
+      if (w > maxDim || h > maxDim) {
+        if (w > h) {
+          h = Math.round((h * maxDim) / w)
+          w = maxDim
+        } else {
+          w = Math.round((w * maxDim) / h)
+          h = maxDim
+        }
+      }
+      canvas.width = w
+      canvas.height = h
+      canvas.getContext('2d')?.drawImage(img, 0, 0, w, h)
+      nuevaEntrada.imagenUrl = canvas.toDataURL('image/jpeg', 0.82)
+    }
+    img.src = reader.result as string
+  }
+  reader.readAsDataURL(file)
+  input.value = ''
+}
+
+async function publicarEntradaBlog() {
+  if (!proyectoBlogId.value || !nuevaEntrada.titulo.trim()) return
+  await addEntradaBlog(proyectoBlogId.value, {
+    titulo: nuevaEntrada.titulo,
+    contenido: nuevaEntrada.contenido,
+    imagenUrl: nuevaEntrada.imagenUrl,
+  })
+  nuevaEntrada.titulo = ''
+  nuevaEntrada.contenido = ''
+  nuevaEntrada.imagenUrl = ''
+}
+
+async function eliminarPostBlog(proyectoId: number, entradaId: string) {
+  await deleteEntradaBlog(proyectoId, entradaId)
+}
+
+function formatFullDate(iso: string): string {
+  if (!iso) return ''
+  return new Date(iso).toLocaleString('es-HN', {
+    day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
+  })
 }
 
 async function guardarProyecto() {
@@ -809,131 +956,152 @@ async function guardarProyecto() {
 
 <style scoped>
 .page-layout { display: flex; min-height: 100vh; background: var(--color-bg); }
-.main { flex: 1; margin-left: 240px; display: flex; flex-direction: column; min-height: 100vh; }
+.main { flex: 1; margin-left: 220px; display: flex; flex-direction: column; min-height: 100vh; }
 
-/* Topbar */
+/* Topbar compacta estilo red social */
 .topbar {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 18px 32px; background: white;
-  border-bottom: 1px solid rgba(47,160,132,0.1);
-  box-shadow: var(--shadow-sm); position: sticky; top: 0; z-index: 50;
+  height: 52px;
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 0 20px; background: rgba(255,255,255,0.95);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--color-border);
+  position: sticky; top: 0; z-index: 50;
 }
-.topbar-left { display: flex; flex-direction: column; gap: 2px; }
-.page-title { font-size: 1.25rem; font-weight: 700; color: var(--color-dark); }
-.page-breadcrumb { font-size: 0.78rem; color: var(--color-text-muted); }
-.topbar-right { display: flex; align-items: center; gap: 16px; }
-.topbar-date { font-size: 0.8rem; color: var(--color-text-muted); font-weight: 500; text-transform: capitalize; }
+.topbar-right { display: flex; align-items: center; gap: 10px; }
 
 .btn-primary {
-  display: inline-flex; align-items: center; gap: 6px;
-  padding: 9px 18px;
-  background: linear-gradient(135deg, #2FA084, #1F6F5F);
-  color: white; border: none; border-radius: var(--radius-md);
-  font-size: 0.85rem; font-weight: 600; cursor: pointer;
-  box-shadow: 0 3px 12px rgba(31,111,95,0.25);
-  transition: transform var(--transition), box-shadow var(--transition);
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 6px 14px;
+  background: var(--color-mid);
+  color: white; border: none; border-radius: var(--radius-full);
+  font-size: 0.78rem; font-weight: 600; cursor: pointer;
+  transition: background var(--transition);
 }
-.btn-primary:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(31,111,95,0.35); }
+.btn-primary:hover:not(:disabled) { background: var(--color-dark); }
 
-.content-area { padding: 28px 32px; display: flex; flex-direction: column; gap: 20px; }
+.content-area { padding: 16px 20px; display: flex; flex-direction: column; gap: 14px; max-width: 1080px; width: 100%; margin: 0 auto; }
 
 /* Loading */
-.loading-state { display: flex; flex-direction: column; align-items: center; gap: 14px; padding: 70px 20px; color: var(--color-text-muted); }
-.loading-spinner { width: 38px; height: 38px; border: 3px solid rgba(47,160,132,0.15); border-top-color: var(--color-mid); border-radius: 50%; animation: spin 0.8s linear infinite; }
+.loading-state { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 60px 20px; color: var(--color-text-muted); font-size: 0.8rem; }
+.loading-spinner { width: 28px; height: 28px; border: 2.5px solid rgba(47,160,132,0.15); border-top-color: var(--color-mid); border-radius: 50%; animation: spin 0.8s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* Stats */
-.stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
-.stat-card {
-  background: white; border-radius: var(--radius-md); padding: 18px 20px;
-  display: flex; align-items: center; gap: 14px;
-  border: 1px solid rgba(47,160,132,0.08); box-shadow: var(--shadow-sm);
+/* Composer estilo Facebook / LinkedIn */
+.social-composer-card {
+  background: white;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  box-shadow: var(--shadow-sm);
+  display: flex; flex-direction: column; gap: 10px;
 }
-.stat-icon { width: 40px; height: 40px; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.stat-icon--total { background: rgba(47,160,132,0.12); color: var(--color-mid); }
-.stat-icon--unseen { background: rgba(142,68,173,0.12); color: #8e44ad; }
-.stat-icon--active { background: rgba(255,193,7,0.14); color: #b8860b; }
-.stat-icon--done { background: rgba(111,207,151,0.18); color: var(--color-dark); }
-.stat-value { font-size: 1.5rem; font-weight: 800; color: var(--color-dark); line-height: 1; }
-.stat-label { font-size: 0.75rem; color: var(--color-text-muted); margin-top: 3px; }
+.composer-top { display: flex; align-items: center; gap: 10px; }
+.composer-avatar {
+  width: 34px; height: 34px; border-radius: 50%;
+  background: linear-gradient(135deg, #2FA084, #1F6F5F);
+  color: white; font-size: 0.8rem; font-weight: 700;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.composer-trigger {
+  flex: 1; text-align: left;
+  padding: 8px 14px; border-radius: var(--radius-full);
+  background: #f0f2f5; border: 1px solid transparent;
+  color: var(--color-text-muted); font-size: 0.8rem;
+  transition: background var(--transition);
+}
+.composer-trigger:hover { background: #e4e6eb; }
+.composer-bottom {
+  display: flex; align-items: center; justify-content: space-between;
+  padding-top: 8px; border-top: 1px solid rgba(0,0,0,0.06);
+  flex-wrap: wrap; gap: 8px;
+}
+.composer-shortcuts { display: flex; gap: 4px; }
+.shortcut-btn {
+  padding: 5px 10px; border-radius: var(--radius-sm);
+  background: transparent; border: none;
+  color: var(--color-text-muted); font-size: 0.75rem; font-weight: 600;
+}
+.shortcut-btn:hover { background: #f0f2f5; color: var(--color-text); }
+.mini-counters { display: flex; gap: 6px; font-size: 0.74rem; color: var(--color-text-muted); }
+.mini-counters strong { color: var(--color-dark); }
 
 /* Filters bar */
 .filters-bar {
   display: flex; align-items: center; justify-content: space-between;
-  gap: 14px; flex-wrap: wrap;
+  gap: 10px; flex-wrap: wrap;
 }
-.filter-tabs { display: flex; gap: 8px; flex-wrap: wrap; }
+.filter-tabs { display: flex; gap: 6px; flex-wrap: wrap; }
 .filter-tab {
-  display: inline-flex; align-items: center; gap: 6px;
-  padding: 8px 14px; border-radius: var(--radius-full);
-  background: white; border: 1px solid rgba(47,160,132,0.15);
-  color: var(--color-text-muted); font-size: 0.82rem; font-weight: 600;
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 5px 12px; border-radius: var(--radius-full);
+  background: white; border: 1px solid var(--color-border);
+  color: var(--color-text-muted); font-size: 0.76rem; font-weight: 600;
   transition: all var(--transition);
 }
 .filter-tab--active {
   background: var(--color-dark); color: white; border-color: var(--color-dark);
 }
 .tab-count {
-  padding: 1px 7px; border-radius: var(--radius-full);
-  background: rgba(0,0,0,0.08); font-size: 0.72rem;
+  padding: 0 6px; border-radius: var(--radius-full);
+  background: rgba(0,0,0,0.07); font-size: 0.68rem;
 }
 .filter-tab--active .tab-count { background: rgba(255,255,255,0.2); }
 
 .search-box {
+  flex: 1; max-width: 440px;
   display: flex; align-items: center; gap: 8px;
-  background: white; border: 1px solid rgba(47,160,132,0.2);
-  border-radius: var(--radius-full); padding: 8px 16px; min-width: 280px;
-  color: var(--color-text-muted);
+  background: #f0f2f5; border-radius: var(--radius-full);
+  padding: 6px 14px; color: var(--color-text-muted);
 }
-.search-input { border: none; outline: none; width: 100%; font-size: 0.85rem; color: var(--color-text); background: transparent; }
+.search-input { border: none; outline: none; width: 100%; font-size: 0.8rem; color: var(--color-text); background: transparent; }
 
 /* Projects Grid */
-.projects-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(420px, 1fr)); gap: 18px; }
+.projects-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 14px; }
 
 .project-card {
-  background: white; border-radius: var(--radius-lg);
-  border: 1px solid rgba(47,160,132,0.12);
-  padding: 22px; box-shadow: var(--shadow-sm);
-  display: flex; flex-direction: column; gap: 14px;
-  transition: box-shadow var(--transition), border-color var(--transition);
+  background: white; border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  padding: 14px 16px; box-shadow: var(--shadow-sm);
+  display: flex; flex-direction: column; gap: 10px;
+  transition: box-shadow var(--transition);
 }
-.project-card:hover { box-shadow: var(--shadow-md); border-color: rgba(111,207,151,0.4); }
+.project-card:hover { box-shadow: var(--shadow-md); }
 
-.project-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
-.project-title-group { display: flex; flex-direction: column; gap: 5px; min-width: 0; flex: 1; }
-.project-badges { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.project-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+.project-title-group { display: flex; flex-direction: column; gap: 3px; min-width: 0; flex: 1; }
+.project-badges { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
 
 .brand-pill {
-  padding: 3px 10px; border-radius: var(--radius-full);
-  background: rgba(47,160,132,0.1); color: var(--color-dark);
-  font-size: 0.72rem; font-weight: 700;
+  padding: 2px 8px; border-radius: var(--radius-full);
+  background: #f0f2f5; color: var(--color-text-muted);
+  font-size: 0.68rem; font-weight: 600;
 }
 .status-pill {
-  padding: 3px 10px; border-radius: var(--radius-full);
-  font-size: 0.72rem; font-weight: 700;
+  padding: 2px 8px; border-radius: var(--radius-full);
+  font-size: 0.68rem; font-weight: 600;
 }
-.status--por_ver { background: rgba(142,68,173,0.12); color: #8e44ad; }
-.status--en_progreso { background: rgba(255,193,7,0.15); color: #b8860b; }
-.status--en_revision { background: rgba(41,128,185,0.12); color: #2980b9; }
-.status--terminado { background: rgba(47,160,132,0.15); color: #1F6F5F; }
+.status--por_ver { background: rgba(142,68,173,0.1); color: #8e44ad; }
+.status--en_progreso { background: rgba(255,193,7,0.14); color: #9c6d00; }
+.status--en_revision { background: rgba(41,128,185,0.1); color: #2980b9; }
+.status--terminado { background: rgba(47,160,132,0.12); color: #1F6F5F; }
 
 .community-pill {
-  padding: 3px 9px; border-radius: var(--radius-full);
-  background: linear-gradient(135deg, #6FCF97, #2FA084);
-  color: white; font-size: 0.68rem; font-weight: 700;
+  padding: 2px 8px; border-radius: var(--radius-full);
+  background: rgba(47,160,132,0.12);
+  color: var(--color-dark); font-size: 0.66rem; font-weight: 700;
 }
 
-.project-title { font-size: 1.08rem; font-weight: 700; color: var(--color-dark); }
-.project-desc { font-size: 0.84rem; color: var(--color-text-muted); line-height: 1.4; }
+.project-title { font-size: 0.92rem; font-weight: 700; color: var(--color-text); line-height: 1.3; }
+.project-desc { font-size: 0.78rem; color: var(--color-text-muted); line-height: 1.38; }
 
-.project-actions { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+.project-actions { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
 .status-select {
-  padding: 5px 8px; border-radius: var(--radius-sm);
-  border: 1px solid rgba(47,160,132,0.25); font-size: 0.76rem;
-  font-weight: 600; color: var(--color-dark); background: #f8fffe; cursor: pointer;
+  padding: 4px 6px; border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border); font-size: 0.72rem;
+  font-weight: 500; color: var(--color-text); background: #f7f8fa; cursor: pointer;
 }
 .icon-btn {
-  width: 30px; height: 30px; border-radius: var(--radius-sm); border: none;
+  width: 26px; height: 26px; border-radius: var(--radius-sm); border: none;
   display: flex; align-items: center; justify-content: center; transition: all var(--transition);
 }
 .icon-btn--whatsapp { background: rgba(37,211,102,0.12); color: #1da851; }
@@ -1022,6 +1190,14 @@ async function guardarProyecto() {
   padding-top: 10px; border-top: 1px solid rgba(47,160,132,0.1); margin-top: auto;
 }
 .updated-label { font-size: 0.74rem; color: var(--color-text-muted); }
+.footer-btns { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.btn-blog {
+  padding: 5px 12px; border-radius: var(--radius-full);
+  background: rgba(47,160,132,0.12); border: 1px solid rgba(47,160,132,0.3);
+  color: var(--color-dark); font-size: 0.74rem; font-weight: 700;
+  transition: all var(--transition);
+}
+.btn-blog:hover { background: var(--color-mid); color: white; }
 .btn-toggle-public {
   padding: 5px 12px; border-radius: var(--radius-full);
   border: 1px solid rgba(47,160,132,0.3); background: transparent;
@@ -1118,6 +1294,27 @@ async function guardarProyecto() {
   padding: 9px 18px; border-radius: var(--radius-md);
   border: 1px solid var(--color-border); background: white;
   color: var(--color-text-muted); font-size: 0.85rem; font-weight: 600;
+}
+
+/* Blog Timeline */
+.blog-timeline {
+  display: flex; flex-direction: column; gap: 12px;
+  max-height: 360px; overflow-y: auto; padding-right: 4px;
+}
+.blog-entry-card {
+  background: white; border: 1px solid rgba(47,160,132,0.18);
+  border-left: 4px solid var(--color-mid);
+  border-radius: var(--radius-md); padding: 14px 16px;
+  display: flex; flex-direction: column; gap: 8px;
+}
+.blog-entry-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+.blog-entry-title { font-size: 0.94rem; font-weight: 700; color: var(--color-dark); }
+.blog-entry-date { font-size: 0.72rem; color: var(--color-text-muted); }
+.blog-entry-content { font-size: 0.84rem; color: var(--color-text); white-space: pre-line; line-height: 1.5; }
+.blog-entry-img {
+  max-height: 180px; width: fit-content; max-width: 100%;
+  border-radius: var(--radius-sm); object-fit: cover; cursor: pointer;
+  border: 1px solid rgba(47,160,132,0.2);
 }
 
 /* Lightbox */

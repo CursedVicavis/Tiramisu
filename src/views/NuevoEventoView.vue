@@ -414,7 +414,7 @@ async function handleSave() {
 /* ── Main ── */
 .main {
   flex: 1;
-  margin-left: 240px;
+  margin-left: 220px;
   display: flex;
   flex-direction: column;
   min-height: 100vh;

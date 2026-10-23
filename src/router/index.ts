@@ -1,7 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import LoginView from '../views/LoginView.vue'
 import ResetPasswordView from '../views/ResetPasswordView.vue'
+import InicioProyectosView from '../views/InicioProyectosView.vue'
 import ProyectosView from '../views/ProyectosView.vue'
+import ComunidadView from '../views/ComunidadView.vue'
 import HomeView from '../views/HomeView.vue'
 import NuevoEventoView from '../views/NuevoEventoView.vue'
 import EditarEventoView from '../views/EditarEventoView.vue'
@@ -29,7 +31,19 @@ const router = createRouter({
     {
       path: '/home',
       name: 'home',
+      component: InicioProyectosView,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/proyectos',
+      name: 'proyectos',
       component: ProyectosView,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/comunidad',
+      name: 'comunidad',
+      component: ComunidadView,
       meta: { requiresAuth: true },
     },
     {

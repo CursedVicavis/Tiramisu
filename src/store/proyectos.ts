@@ -41,6 +41,14 @@ export interface FeedbackComunidad {
   createdAt: string
 }
 
+export interface EntradaBlog {
+  id: string
+  titulo: string
+  contenido: string
+  imagenUrl?: string
+  createdAt: string
+}
+
 export interface Proyecto {
   id: number
   titulo: string
@@ -52,6 +60,7 @@ export interface Proyecto {
   imagenes: ImagenProyecto[]
   items: ItemSeguimiento[]
   recordatorios: RecordatorioProyecto[]
+  blog: EntradaBlog[]
   esPublico: boolean
   likes: number
   feedback: FeedbackComunidad[]
@@ -89,6 +98,7 @@ function toProyectoRow(data: Omit<Proyecto, 'id' | 'createdAt' | 'updatedAt'>) {
     imagenes: data.imagenes,
     items: data.items,
     recordatorios: data.recordatorios,
+    blog: data.blog,
     es_publico: data.esPublico,
     likes: data.likes,
     feedback: data.feedback,
@@ -109,6 +119,7 @@ function fromProyectoRow(row: any): Proyecto {
     imagenes: Array.isArray(row.imagenes) ? row.imagenes : [],
     items: Array.isArray(row.items) ? row.items : [],
     recordatorios: Array.isArray(row.recordatorios) ? row.recordatorios : [],
+    blog: Array.isArray(row.blog) ? row.blog : [],
     esPublico: Boolean(row.es_publico),
     likes: Number(row.likes ?? 0),
     feedback: Array.isArray(row.feedback) ? row.feedback : [],
@@ -171,7 +182,9 @@ export async function initProyectos(force = false): Promise<void> {
 }
 
 // ── Operaciones CRUD ───────────────────────────────────
-export type NuevoProyectoInput = Omit<Proyecto, 'id' | 'createdAt' | 'updatedAt' | 'likes' | 'feedback' | 'autorEmail'>
+export type NuevoProyectoInput = Omit<Proyecto, 'id' | 'createdAt' | 'updatedAt' | 'likes' | 'feedback' | 'autorEmail' | 'blog'> & {
+  blog?: EntradaBlog[]
+}
 
 export async function addProyecto(input: NuevoProyectoInput): Promise<Proyecto> {
   const { data: { session } } = await supabase.auth.getSession()
@@ -180,6 +193,7 @@ export async function addProyecto(input: NuevoProyectoInput): Promise<Proyecto> 
 
   const payload: Omit<Proyecto, 'id' | 'createdAt' | 'updatedAt'> = {
     ...input,
+    blog: input.blog ?? [],
     likes: 0,
     feedback: [],
     autorEmail,
@@ -302,11 +316,59 @@ export async function likeProyecto(proyectoId: number): Promise<void> {
   await updateProyecto(proyectoId, { likes: proyecto.likes + 1 })
 }
 
-// ── Helper para compartir recordatorio o proyecto por WhatsApp ──
+// ── Blog de avances por proyecto ───────────────────────
+export async function addEntradaBlog(
+  proyectoId: number,
+  data: { titulo: string; contenido: string; imagenUrl?: string }
+): Promise<void> {
+  const proyecto = getProyecto(proyectoId)
+  if (!proyecto || !data.titulo.trim()) return
+
+  const nuevaEntrada: EntradaBlog = {
+    id: Date.now().toString(36) + Math.random().toString(36).substring(2, 6),
+    titulo: data.titulo.trim(),
+    contenido: data.contenido.trim(),
+    imagenUrl: data.imagenUrl?.trim() || undefined,
+    createdAt: new Date().toISOString(),
+  }
+
+  const blogActual = Array.isArray(proyecto.blog) ? proyecto.blog : []
+  await updateProyecto(proyectoId, {
+    blog: [nuevaEntrada, ...blogActual],
+  })
+}
+
+export async function deleteEntradaBlog(proyectoId: number, entradaId: string): Promise<void> {
+  const proyecto = getProyecto(proyectoId)
+  if (!proyecto) return
+  const blogActual = Array.isArray(proyecto.blog) ? proyecto.blog : []
+  await updateProyecto(proyectoId, {
+    blog: blogActual.filter(b => b.id !== entradaId),
+  })
+}
+
+// ── Máscara de teléfono +504 y helper de WhatsApp ──────
+export function formatPhoneHN(value: string): string {
+  // Extraer solo dígitos
+  let digits = (value || '').replace(/\D/g, '')
+  // Si empieza con 504, quitar el prefijo para formatear los 8 dígitos locales
+  if (digits.startsWith('504')) {
+    digits = digits.slice(3)
+  }
+  digits = digits.slice(0, 8)
+  if (digits.length === 0) return '+504 '
+  if (digits.length <= 4) return `+504 ${digits}`
+  return `+504 ${digits.slice(0, 4)}-${digits.slice(4)}`
+}
+
 export function buildWhatsAppUrl(mensaje: string, telefono?: string): string {
-  const phoneClean = (telefono || '').replace(/[^\d]/g, '')
+  let digits = (telefono || '').replace(/\D/g, '')
+  if (digits === '504') digits = ''
+  if (digits.length > 0 && !digits.startsWith('504') && digits.length <= 8) {
+    digits = `504${digits}`
+  }
   const encoded = encodeURIComponent(mensaje)
-  return phoneClean
-    ? `https://wa.me/${phoneClean}?text=${encoded}`
+  return digits
+    ? `https://wa.me/${digits}?text=${encoded}`
     : `https://wa.me/?text=${encoded}`
 }
