@@ -431,8 +431,7 @@ function validate(): boolean {
 async function handleSave() {
   if (!validate()) return
   saving.value = true
-  await new Promise(resolve => setTimeout(resolve, 600))
-  addEvento({
+  await addEvento({
     evento: form.evento.trim(),
     descripcion: form.descripcion.trim(),
     fechaInicio: form.fechaInicio,

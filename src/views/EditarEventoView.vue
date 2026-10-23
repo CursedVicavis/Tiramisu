@@ -303,7 +303,7 @@
 <script setup lang="ts">
 import { ref, reactive, computed, onMounted } from 'vue'
 import { useRouter, useRoute, RouterLink } from 'vue-router'
-import { getEvento, updateEvento } from '../store/eventos'
+import { getEvento, updateEvento, initEventos, eventosStore } from '../store/eventos'
 import type { Tarea } from '../store/eventos'
 import AppLogo from '../components/AppLogo.vue'
 import { supabase } from '../utils/supabase'
@@ -331,7 +331,10 @@ let nextTaskId = 1000
 const tareas = ref<Tarea[]>([])
 
 // ── Cargar datos al montar ──
-onMounted(() => {
+onMounted(async () => {
+  if (!eventosStore.initialized || eventosStore.loading) {
+    await initEventos()
+  }
   const evento = getEvento(eventoId)
   if (!evento) {
     eventoExiste.value = false
@@ -401,8 +404,7 @@ function validate(): boolean {
 async function handleUpdate() {
   if (!validate()) return
   saving.value = true
-  await new Promise(r => setTimeout(r, 600))
-  updateEvento(eventoId, {
+  await updateEvento(eventoId, {
     evento: form.evento.trim(),
     descripcion: form.descripcion.trim(),
     fechaInicio: form.fechaInicio,

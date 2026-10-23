@@ -33,14 +33,18 @@ export interface Evento {
 export const eventosStore = reactive<{
   eventos: Evento[]
   loading: boolean
+  initialized: boolean
   error: string | null
   _nextId: number
 }>({
   eventos: [],
   loading: false,
+  initialized: false,
   error: null,
   _nextId: 1,
 })
+
+let initPromise: Promise<void> | null = null
 
 // ── Mappers ────────────────────────────────────────────
 function toEventoRow(data: Omit<Evento, 'id' | 'createdAt' | 'tareas'>) {
@@ -105,26 +109,35 @@ function lsSave(eventos: Evento[]) {
 }
 
 // ── Init ───────────────────────────────────────────────
-export async function initEventos(): Promise<void> {
-  eventosStore.loading = true
-  eventosStore.error = null
+export async function initEventos(force = false): Promise<void> {
+  if (initPromise && !force) return initPromise
+  if (eventosStore.initialized && !force) return
 
-  // Supabase join
-  const { data, error } = await supabase
-    .from('Eventos')
-    .select('*, Eventos_Detalles(*)')
-    .order('created_at', { ascending: false })
+  initPromise = (async () => {
+    eventosStore.loading = true
+    eventosStore.error = null
 
-  if (error || !data) {
-    console.warn('[Supabase] Fallback a localStorage:', error?.message)
-    eventosStore.eventos = lsLoad()
-  } else {
-    eventosStore.eventos = data.map(fromEventoRow)
-    lsSave(eventosStore.eventos)
-  }
+    // Supabase join
+    const { data, error } = await supabase
+      .from('Eventos')
+      .select('*, Eventos_Detalles(*)')
+      .order('created_at', { ascending: false })
 
-  eventosStore._nextId = eventosStore.eventos.reduce((max, e) => Math.max(max, e.id), 0) + 1
-  eventosStore.loading = false
+    if (error || !data) {
+      console.warn('[Supabase] Fallback a localStorage:', error?.message)
+      eventosStore.eventos = lsLoad()
+    } else {
+      eventosStore.eventos = data.map(fromEventoRow)
+      lsSave(eventosStore.eventos)
+    }
+
+    eventosStore._nextId = eventosStore.eventos.reduce((max, e) => Math.max(max, e.id), 0) + 1
+    eventosStore.initialized = true
+    eventosStore.loading = false
+    initPromise = null
+  })()
+
+  return initPromise
 }
 
 // ── CRUD ───────────────────────────────────────────────

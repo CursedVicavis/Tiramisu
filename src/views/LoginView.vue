@@ -127,6 +127,7 @@ import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import AppLogo from '../components/AppLogo.vue'
 import { supabase } from '../utils/supabase'
+import { initEventos } from '../store/eventos'
 
 const router = useRouter()
 
@@ -184,6 +185,7 @@ async function handleLogin() {
     loginError.value = 'Credenciales incorrectas o error en inicio de sesión.'
     loading.value = false
   } else {
+    await initEventos(true)
     router.push({ name: 'home' })
   }
 }
